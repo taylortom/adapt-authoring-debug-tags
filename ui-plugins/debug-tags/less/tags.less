@@ -1,0 +1,34 @@
+@import 'fonts';
+@import 'sharedStyles';
+
+body.module-debug {
+  .debug .tags {
+    padding: 20px;
+  }
+  .debug .tags table {
+    margin: 0 auto;
+  }
+  .debug .tags table, .debug thead, .debug tr, .debug td, .debug th, .debug table {
+    padding: 5px 10px;
+    border: 1px solid @tertiary-color;
+  }
+  .debug .tags thead {
+    background: @tertiary-color;
+    color: white;
+  }
+  .debug .tags tr.unused {
+    text-decoration: line-through;
+  }
+  .debug .tags td {
+    vertical-align: middle;
+  }
+  .debug .tags td.centre {
+    text-align: center;
+  }
+  .debug .tags table button {
+    margin-right: 5px;
+  }
+  .debug .tags table button:last-child {
+    margin-right: 0;
+  }
+}

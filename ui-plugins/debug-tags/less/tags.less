@@ -5,6 +5,13 @@ body.module-debug {
   .debug .tags {
     padding: 20px;
   }
+  .debug .tags .text {
+    text-align: center;
+  }
+  .debug .tags .actions {
+    margin: 20px;
+    text-align: center;
+  }
   .debug .tags table {
     margin: 0 auto;
   }
@@ -16,8 +23,12 @@ body.module-debug {
     background: @tertiary-color;
     color: white;
   }
-  .debug .tags tr.unused {
+  .debug .tags tr.unused td.tag-title {
     text-decoration: line-through;
+  }
+  .debug .tags tr.unused td.tag-courses,
+  .debug .tags tr.unused td.tag-assets {
+    opacity: 0.4;
   }
   .debug .tags td {
     vertical-align: middle;

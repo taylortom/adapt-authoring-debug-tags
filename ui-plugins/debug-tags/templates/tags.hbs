@@ -1,5 +1,9 @@
 <div class="inner">
   <div class="tags-container">
+    <p class="text">Found {{tags.length}} tags.</p>
+    <div class="actions">
+      <button class="btn alert delete-unused">Delete {{unused}} unused tags</button>
+    </div>
     <table>
       <thead>
         <tr>
@@ -11,10 +15,10 @@
       </thead>
       {{#each tags}}
         <tr data-id="{{this._id}}" class="{{#if this.unused}}unused{{/if}}">
-          <td>{{this.title}}</td>
-          <td class="centre">{{this.courses.length}}</td>
-          <td class="centre">{{this.assets.length}}</td>
-          <td>
+          <td class="tag-title">{{this.title}}</td>
+          <td class="tag-courses centre">{{this.courses.length}}</td>
+          <td class="tag-assets centre">{{this.assets.length}}</td>
+          <td class="tag-actions">
             <button class="btn primary rename">Rename</button>
             <button class="btn secondary transfer">Transfer</button>
             {{#if this.unused}}<button class="btn alert delete">Delete</button>{{/if}}

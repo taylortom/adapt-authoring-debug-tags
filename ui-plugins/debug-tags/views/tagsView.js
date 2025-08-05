@@ -29,7 +29,9 @@ define(function(require){
         const courses = new ContentCollection(undefined, { _type: 'course' });
         const assets = new ApiCollection(undefined, { url: 'api/assets' });
         
-        await Promise.all([tags.fetch(), courses.fetch(), assets.fetch()])
+        await Promise.all([tags.fetch(), courses.fetch(), assets.fetch()]);
+
+        let unused = 0;
 
         this.model.set('tags', tags.models
           .sort((t1, t2) => t1.get('title').localeCompare(t2.get('title')))
@@ -44,8 +46,11 @@ define(function(require){
                 .map(a => a.attributes)
             };
             data.unused = !data.courses.length && !data.assets.length;
+            if(data.unused) unused++;
             return data;
           }));
+        this.model.set('unused', unused);
+
         this.render();
       } catch(e) {
         console.log(e);
@@ -67,8 +72,13 @@ define(function(require){
         Origin.Notify.alert({
           type: 'input',
           title: 'Choose new name',
+          icon: 'question',
           inputValue: tagData.title,
+          showCancelButton: true,
           callback: async data => {
+            if(data.isDismissed) {
+              return
+            }
             const r = await $.ajax(`api/tags/${tagData._id}`, { method: 'PATCH', data: { title: data.value } });
             Origin.Notify.toast({ type: 'success', text: `Tag '${tagData.title}' successfully renamed to '${data.value}'`})
             this.fetch();
@@ -82,13 +92,25 @@ define(function(require){
     transferTag: async function(e) {
       try {
         const tagData = this.getTagData(e);
-        await Promise.all([...tagData.courses, ...Promise.tagData.assets].map(d => {
-          return $.ajax(`api/${d._type === 'course' ? 'content' : 'asset'}/${d._id}`, { method: 'PATCH', body: {
-            tags: d.tags.filter(t => t._id !== tagData._id).concat(targetTag._id)
-          } });
-        }))
-        await $.ajax(`api/tags/${tagData._id}`, { method: 'DELETE' });
-        Origin.Notify.toast({ type: 'success', text: `Reassigned courses and assets tagged with '${tagData.title}' to '${targetTag.title}'`})
+        Origin.Notify.alert({
+          input: 'select',
+          title: 'Choose destination tag',
+          text: 'All items using the tag will be transferred to the destination tag',
+          icon: 'question',
+          showCancelButton: true,
+          inputOptions: this.model.get('tags').reduce((tagMemo, tag) => {
+            return { ...tagMemo, [tag._id]: tag.title }
+          }, {}),
+          callback: async data => {
+            if(data.isDismissed) {
+              return
+            }
+            const destTag = this.model.get('tags').find(t => t._id === data.value)
+            await $.ajax(`api/tags/transfer/${tagData._id}?deleteSourceTag=false`, { method: 'POST', data: { destId: destTag._id } });
+            Origin.Notify.toast({ type: 'success', text: `Reassigned courses and assets tagged with '${tagData.title}' to '${destTag.title}'`})
+            this.fetch();
+          }
+        })
       } catch(e) {
         Origin.Notify.alert({ type: 'error', title: 'Failed to transfer tag', text: e.message })
       }
@@ -99,6 +121,21 @@ define(function(require){
         const tagData = this.getTagData(e);
         await $.ajax(`api/tags/${tagData._id}`, { method: 'DELETE' });
         Origin.Notify.toast({ type: 'success', text: `Deleted '${tagData.title}'`})
+        this.fetch();
+      } catch(e) {
+        Origin.Notify.alert({ type: 'error', title: 'Failed to delete tag', text: e.message })
+      }
+    },
+    
+    deleteUnusedTags: async function(e) {
+      try {
+        await Promise.all(this.get('tags').map(t => {
+          if(t.unused) {
+            return $.ajax(`api/tags/${tagData._id}`, { method: 'DELETE' });
+          }
+        }));
+        Origin.Notify.toast({ type: 'success', text: `Deleted '${tagData.title}'`})
+        this.fetch();
       } catch(e) {
         Origin.Notify.alert({ type: 'error', title: 'Failed to delete tag', text: e.message })
       }

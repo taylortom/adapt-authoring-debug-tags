@@ -106,7 +106,7 @@ define(function(require){
               return
             }
             const destTag = this.model.get('tags').find(t => t._id === data.value)
-            await $.ajax(`api/tags/transfer/${tagData._id}?deleteSourceTag=false`, { method: 'POST', data: { destId: destTag._id } });
+            await $.ajax(`api/tags/transfer/${tagData._id}?deleteSourceTag=false`, { method: 'POST', contentType: 'application/json', data: JSON.stringify({ destId: destTag._id }) });
             Origin.Notify.toast({ type: 'success', text: `Reassigned courses and assets tagged with '${tagData.title}' to '${destTag.title}'`})
             this.fetch();
           }

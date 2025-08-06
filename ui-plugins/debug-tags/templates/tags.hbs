@@ -1,0 +1,30 @@
+<div class="inner">
+  <div class="tags-container">
+    <p class="text">Found {{tags.length}} tags.</p>
+    <div class="actions">
+      <button class="btn alert delete-unused">Delete {{unused}} unused tags</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th># of courses</th>
+          <th># of assets</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      {{#each tags}}
+        <tr data-id="{{this._id}}" class="{{#if this.unused}}unused{{/if}}">
+          <td class="tag-title">{{this.title}}</td>
+          <td class="tag-courses centre">{{this.courses.length}}</td>
+          <td class="tag-assets centre">{{this.assets.length}}</td>
+          <td class="tag-actions">
+            <button class="btn primary rename">Rename</button>
+            <button class="btn secondary transfer">Transfer</button>
+            {{#if this.unused}}<button class="btn alert delete">Delete</button>{{/if}}
+          </td>
+        </tr>
+      {{/each}}
+    </table>
+  </div>
+</div>

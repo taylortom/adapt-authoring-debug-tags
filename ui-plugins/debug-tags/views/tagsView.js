@@ -36,15 +36,14 @@ define(function(require){
         this.model.set('tags', tags.models
           .sort((t1, t2) => t1.get('title').localeCompare(t2.get('title')))
           .map(t => {
-            const data = {
-              ...t.attributes,
+            const data = Object.assign(t.attributes, {
               courses: courses.models
                 .filter(c => c.get('tags').includes(t.get('_id')))
                 .map(c => c.attributes),
               assets: assets.models
                 .filter(a => a.get('tags').includes(t.get('_id')))
                 .map(a => a.attributes)
-            };
+            });
             data.unused = !data.courses.length && !data.assets.length;
             if(data.unused) unused++;
             return data;
@@ -99,7 +98,7 @@ define(function(require){
           icon: 'question',
           showCancelButton: true,
           inputOptions: this.model.get('tags').reduce((tagMemo, tag) => {
-            return { ...tagMemo, [tag._id]: tag.title }
+            return Object.assign(tagMemo, { [tag._id]: tag.title })
           }, {}),
           callback: async data => {
             if(data.isDismissed) {

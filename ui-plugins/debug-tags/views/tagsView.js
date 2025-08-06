@@ -32,19 +32,22 @@ define(function(require){
         await Promise.all([tags.fetch(), courses.fetch(), assets.fetch()]);
 
         let unused = 0;
-
+        
         this.model.set('tags', tags.models
           .sort((t1, t2) => t1.get('title').localeCompare(t2.get('title')))
           .map(t => {
-            const data = Object.assign(t.attributes, {
-              courses: courses.models
-                .filter(c => c.get('tags').includes(t.get('_id')))
-                .map(c => c.attributes),
-              assets: assets.models
-                .filter(a => a.get('tags').includes(t.get('_id')))
-                .map(a => a.attributes)
+            const types = ['assets', 'courses'];
+            const data = Object.assign({}, t.attributes, { assets, courses });
+            types.forEach(type => {
+              data[type] = data[type].models
+                .map(item => item.attributes)
+                .filter(item => {
+                  try { 
+                    return item.get('tags').includes(t.get('_id')) 
+                  } catch(e) { return false } 
+                })
             });
-            data.unused = !data.courses.length && !data.assets.length;
+            data.unused = types.every(t => !data[type].length);
             if(data.unused) unused++;
             return data;
           }));

@@ -47,7 +47,7 @@ define(function(require){
                   } catch(e) { return false } 
                 })
             });
-            data.unused = types.every(t => !data[type].length);
+            data.unused = types.every(type => !data[type].length);
             if(data.unused) unused++;
             return data;
           }));

@@ -43,7 +43,7 @@ define(function(require){
                 .map(item => item.attributes)
                 .filter(item => {
                   try { 
-                    return item.get('tags').includes(t.get('_id')) 
+                    return item.tags.includes(data._id)) 
                   } catch(e) { return false } 
                 })
             });

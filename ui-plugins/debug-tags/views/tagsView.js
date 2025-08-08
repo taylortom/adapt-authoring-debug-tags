@@ -41,11 +41,7 @@ define(function(require){
             types.forEach(type => {
               data[type] = data[type].models
                 .map(item => item.attributes)
-                .filter(item => {
-                  try { 
-                    return item.tags.includes(data._id)) 
-                  } catch(e) { return false } 
-                })
+                .filter(item => item.tags && item.tags.includes(data._id))
             });
             data.unused = types.every(type => !data[type].length);
             if(data.unused) unused++;

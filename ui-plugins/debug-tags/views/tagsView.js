@@ -5,7 +5,6 @@ define(function(require){
   var ContentCollection = require('core/collections/contentCollection');
   var Origin = require('core/origin');
   var OriginView = require('core/views/originView');
-  var TagsCollection = require('core/collections/tagsCollection');
 
   var TagsView = OriginView.extend({
     tagName: 'div',
@@ -25,9 +24,9 @@ define(function(require){
 
     fetch: async function(options) {
       try {
-        const tags = new TagsCollection(options);
+        const tags = ApiCollection.Tags();
         const courses = new ContentCollection(undefined, { _type: 'course' });
-        const assets = new ApiCollection(undefined, { url: 'api/assets' });
+        const assets = ApiCollection.Assets();
         
         await Promise.all([tags.fetch(), courses.fetch(), assets.fetch()]);
 
